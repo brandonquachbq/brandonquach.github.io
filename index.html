@@ -13,8 +13,8 @@
   --color-accent: #7C9473;
   --color-accent-deep: #3F4F35;
   --color-text: #3A342C;
-  --color-text-muted: #635B50; /* darkened from #7A7266 so it stays readable on the paper texture */
-  --color-link-hover: #5C7048;
+  --color-text-muted: #524B41; /* darkened from #7A7266: keeps >5:1 contrast even over the darkest paper creases */
+  --color-link-hover: #34432B; /* hover darkens (a lighter green was too faint on the paper) */
   --color-border: #DCE1CF;
   /* Alternate-band tint: see-through, so the paper texture runs unbroken across every band */
   --color-band: rgba(124, 148, 115, 0.10);
@@ -39,7 +39,9 @@ html { scroll-behavior: smooth; }
 body {
   margin: 0;
   /* One continuous paper texture behind the whole page (a seamless tile, so it can repeat forever) */
-  background: var(--color-bg) url("assets/background-tile.jpg") repeat;
+  background:
+    linear-gradient(rgb(250 246 237 / var(--paper-fade)), rgb(250 246 237 / var(--paper-fade))),
+    var(--color-bg) url("assets/background-tile.jpg") repeat;
   color: var(--color-text);
   font-family: var(--font-body);
   line-height: 1.6;
@@ -185,7 +187,7 @@ ul { list-style: none; margin: 0; padding: 0; }
 }
 
 .eyebrow, .section__eyebrow {
-  font-size: 0.85rem;
+  font-size: 0.9rem;
   letter-spacing: 0.08em;
   text-transform: uppercase;
   color: var(--color-text-muted);
@@ -356,7 +358,7 @@ a.card:focus-visible {
 }
 
 .timeline__date {
-  font-size: 0.85rem;
+  font-size: 0.9rem;
   color: var(--color-text-muted);
   font-weight: 500;
   white-space: nowrap;
@@ -457,7 +459,7 @@ a.card:focus-visible {
 }
 
 .list-row__date {
-  font-size: 0.85rem;
+  font-size: 0.9rem;
   color: var(--color-text-muted);
   font-weight: 500;
   white-space: nowrap;
@@ -604,7 +606,7 @@ a.card:focus-visible {
                 <h3>Howard Hughes Medical Institute Cech Fellow</h3>
                 <span class="timeline__date">May 2026 - July 2026</span>
               </div>
-              <p class="timeline__org">Shendure Lab, University of Washington, Department of Genome Sciences</p>
+              <p class="timeline__org">Shendure Lab, University of Washington - Department of Genome Sciences</p>
               <ul class="timeline__bullets">
                 <li>Project: Genomic Origin as a Determinant of Transgene Silencing in Mouse Embryonic Stem Cells</li>
               </ul>
