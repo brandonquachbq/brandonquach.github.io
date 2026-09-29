@@ -1,1 +1,844 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Brandon Quach</title>
+  <meta name="description" content="Brandon Quach — portfolio and resume" />
+  <style>
+/* ---------- Design tokens ---------- */
+:root {
+  --color-bg: #FAF6ED;
+  --color-surface: #EEF0E1;
+  --color-accent: #7C9473;
+  --color-accent-deep: #3F4F35;
+  --color-text: #3A342C;
+  --color-text-muted: #635B50; /* darkened from #7A7266 so it stays readable on the paper texture */
+  --color-link-hover: #5C7048;
+  --color-border: #DCE1CF;
+  /* Alternate-band tint: see-through, so the paper texture runs unbroken across every band */
+  --color-band: rgba(124, 148, 115, 0.10);
+  /* Card "bubbles": translucent parchment, so the paper shows through faintly */
+  --color-card: rgba(251, 248, 240, 0.72);
+  --color-card-hover: rgba(252, 250, 244, 0.9);
 
+  --font-heading: Georgia, "Times New Roman", serif;
+  --font-body: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+
+  --container-width: 1200px;
+  --radius: 16px;
+  --transition: 0.25s ease;
+}
+
+/* ---------- Reset ---------- */
+*, *::before, *::after { box-sizing: border-box; }
+html { scroll-behavior: smooth; }
+
+body {
+  margin: 0;
+  /* One continuous paper texture behind the whole page (a seamless tile, so it can repeat forever) */
+  background: var(--color-bg) url("assets/background-tile.jpg") repeat;
+  color: var(--color-text);
+  font-family: var(--font-body);
+  line-height: 1.6;
+  -webkit-font-smoothing: antialiased;
+}
+
+h1, h2, h3 {
+  font-family: var(--font-heading);
+  color: var(--color-accent-deep);
+  margin: 0;
+  line-height: 1.15;
+}
+
+p { margin: 0; }
+
+a {
+  color: var(--color-accent-deep);
+  text-decoration: none;
+  transition: color var(--transition);
+}
+a:hover { color: var(--color-link-hover); }
+
+ul { list-style: none; margin: 0; padding: 0; }
+
+.container {
+  max-width: var(--container-width);
+  margin: 0 auto;
+  padding: 0 24px;
+}
+
+/* ---------- Hero nav badges ---------- */
+.nav__link {
+  display: block;
+  position: relative;
+}
+/* --tin-width is how wide the visible tin is; --visible (set on each <img>) is the fraction
+   of that PNG's width that is actual tin, so transparent padding doesn't make tins look uneven */
+.nav__badge {
+  display: block;
+  width: calc(var(--tin-width, 132px) / var(--visible, 1));
+  height: auto;
+  transition: transform var(--transition), filter var(--transition);
+}
+.nav__link:hover .nav__badge { transform: scale(1.05); }
+.nav__link.is-active .nav__badge {
+  filter: drop-shadow(0 0 0 var(--color-accent)) drop-shadow(0 4px 14px rgba(63, 79, 53, 0.35));
+}
+
+/* ---------- Hero ---------- */
+.hero {
+  padding: 80px 24px 100px;
+  text-align: left;
+}
+
+.hero__grid {
+  --hero-gap: 48px; /* space between the tea tins and your text */
+  position: relative;
+  display: flex;
+  align-items: flex-start;
+  justify-content: center;
+  gap: var(--hero-gap);
+}
+
+.hero__main {
+  order: 2;
+  flex: 0 1 560px;
+  min-width: 280px;
+  display: flex;
+  flex-direction: column;
+  gap: 32px;
+}
+
+.hero__nav {
+  order: 1;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 28px;
+  flex-shrink: 0;
+}
+
+/* ---------- Teapot + "Have a cup with me!" ---------- */
+/* Positioned outside the layout so the tins + text stay centered exactly as before */
+.hero__teapot {
+  --teapot-width: 220px;
+  position: absolute;
+  width: var(--teapot-width);
+  /* right edge sits 24px left of the tins (the tins + 560px text column are centered in the grid) */
+  right: calc(50% + (var(--badge-width, 150px) + var(--hero-gap) + 560px) / 2 + 24px);
+  /* vertically centers the pot on the first tin (teapot.png is 1022 x 489) */
+  top: calc(var(--first-tin-height, 226px) / 2 - var(--teapot-width) * 489 / 1022 / 2);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 8px;
+}
+
+.hero__teapot img {
+  display: block;
+  width: var(--teapot-width);
+  height: auto;
+}
+
+.hero__teapot-text {
+  font-family: var(--font-heading);
+  font-size: 1.1rem;
+  color: var(--color-accent-deep);
+  min-height: 1.6em;
+  white-space: nowrap;
+  /* the drawing (pot + arrow) is centered at 64.4% of the image width, not 50% */
+  transform: translateX(calc(var(--teapot-width) * 0.144));
+}
+
+.hero__teapot-text.is-typing::after {
+  content: "|";
+  margin-left: 2px;
+  animation: caret-blink 0.8s step-end infinite;
+}
+
+@keyframes caret-blink {
+  50% { opacity: 0; }
+}
+
+.hero__photo-wrap {
+  width: 100%;
+  max-width: 560px;
+}
+
+.hero__photo {
+  width: 100%;
+  aspect-ratio: 16 / 9;
+  border-radius: var(--radius);
+  border: 2px dashed var(--color-border);
+  background: var(--color-surface);
+  overflow: hidden;
+}
+
+.hero__photo img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  display: block;
+}
+
+.eyebrow, .section__eyebrow {
+  font-size: 0.85rem;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: var(--color-text-muted);
+  font-weight: 500;
+  margin-bottom: 12px;
+  display: block;
+}
+
+.hero__name {
+  font-size: clamp(2.5rem, 6vw, 3.75rem);
+  margin-bottom: 12px;
+}
+
+.hero__tagline {
+  font-size: 1.25rem;
+  color: var(--color-accent-deep);
+  font-weight: 500;
+  margin-bottom: 20px;
+}
+
+.hero__intro {
+  color: #4A4338;
+  font-size: 1.1rem;
+  font-weight: 450;
+  line-height: 1.7;
+  max-width: 560px;
+  margin-bottom: 36px;
+}
+
+/* ---------- Sections ---------- */
+.section {
+  padding: 96px 0;
+}
+.section--alt {
+  background: var(--color-band);
+}
+
+.section__title {
+  font-size: clamp(1.8rem, 4vw, 2.5rem);
+  margin-bottom: 12px;
+}
+
+.section__subtitle {
+  color: var(--color-text-muted);
+  font-size: 1.05rem;
+  margin-bottom: 48px;
+  max-width: 560px;
+}
+
+/* Scroll reveal */
+.reveal {
+  opacity: 0;
+  transform: translateY(24px);
+  transition: opacity 0.6s ease, transform 0.6s ease;
+}
+.reveal.is-visible {
+  opacity: 1;
+  transform: translateY(0);
+}
+
+/* ---------- Projects ---------- */
+.project-grid {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 24px;
+}
+
+.card {
+  display: block;
+  background: var(--color-card);
+  -webkit-backdrop-filter: blur(2px);
+  backdrop-filter: blur(2px);
+  border: 1px solid rgba(124, 148, 115, 0.28);
+  box-shadow: 0 2px 10px rgba(63, 79, 53, 0.06);
+  border-radius: var(--radius);
+  padding: 28px;
+  color: inherit;
+  transition: transform var(--transition), box-shadow var(--transition), border-color var(--transition), background-color var(--transition);
+}
+a.card:hover {
+  background: var(--color-card-hover);
+  transform: translateY(-4px);
+  box-shadow: 0 12px 32px rgba(63, 79, 53, 0.1);
+  border-color: var(--color-accent);
+}
+a.card:focus-visible {
+  outline: 2px solid var(--color-accent);
+  outline-offset: 3px;
+}
+
+.card__top {
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+  gap: 12px;
+  margin-bottom: 12px;
+}
+
+.card__title {
+  font-size: 1.15rem;
+}
+
+.card__role {
+  color: var(--color-accent-deep);
+  font-weight: 500;
+  font-size: 0.9rem;
+  margin-bottom: 8px;
+}
+
+.card__desc {
+  color: var(--color-text-muted);
+  font-size: 0.95rem;
+  margin-bottom: 18px;
+}
+
+.tag-list {
+  display: flex;
+  gap: 8px;
+  flex-wrap: wrap;
+}
+.tag {
+  background: var(--color-surface);
+  color: var(--color-accent-deep);
+  font-size: 0.8rem;
+  font-weight: 500;
+  padding: 6px 12px;
+  border-radius: 999px;
+  border: 1px solid var(--color-border);
+}
+
+/* ---------- Timeline ---------- */
+.timeline {
+  display: flex;
+  flex-direction: column;
+  gap: 36px;
+  border-left: 2px solid var(--color-border);
+  padding-left: 32px;
+  margin-bottom: 48px;
+}
+
+.timeline__item {
+  position: relative;
+}
+
+.timeline__dot {
+  position: absolute;
+  left: -39px;
+  top: 4px;
+  width: 12px;
+  height: 12px;
+  border-radius: 50%;
+  background: var(--color-accent);
+  /* transparent ring (not a solid "cutout" color) so the dot sits cleanly on the paper texture */
+  border: 3px solid transparent;
+  background-clip: padding-box;
+}
+
+.timeline__head {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: baseline;
+  justify-content: space-between;
+  gap: 8px;
+}
+
+.timeline__head h3 {
+  font-size: 1.15rem;
+}
+
+.timeline__date {
+  font-size: 0.85rem;
+  color: var(--color-text-muted);
+  font-weight: 500;
+  white-space: nowrap;
+}
+
+.timeline__org {
+  color: var(--color-accent-deep);
+  font-weight: 500;
+  font-size: 0.95rem;
+  margin: 4px 0 8px;
+}
+
+.timeline__desc {
+  color: var(--color-text-muted);
+  font-size: 0.95rem;
+}
+
+.timeline__bullets {
+  list-style: disc;
+  padding-left: 20px;
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+.timeline__bullets li {
+  color: var(--color-text-muted);
+  font-size: 0.95rem;
+}
+
+/* ---------- Subsections (Awards, Presentations, etc.) ---------- */
+.subsection {
+  margin-top: 56px;
+}
+
+.subsection__title {
+  font-size: 1.3rem;
+  margin-bottom: 20px;
+  cursor: pointer;
+  list-style: none;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  user-select: none;
+}
+.subsection__title::-webkit-details-marker { display: none; }
+.subsection__title::after {
+  content: "▾";
+  font-size: 1rem;
+  color: var(--color-text-muted);
+  transition: transform var(--transition);
+  flex-shrink: 0;
+}
+.subsection:not([open]) .subsection__title::after { transform: rotate(-90deg); }
+.subsection__title:hover { color: var(--color-link-hover); }
+
+.subsection .list-rows {
+  margin-top: 4px;
+}
+
+.list-rows {
+  display: flex;
+  flex-direction: column;
+  gap: 18px;
+}
+
+.list-row {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: space-between;
+  align-items: baseline;
+  gap: 6px 24px;
+  padding-bottom: 18px;
+  border-bottom: 1px solid var(--color-border);
+}
+
+.list-row:last-child {
+  border-bottom: none;
+  padding-bottom: 0;
+}
+
+.list-row__main {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+}
+
+.list-row__title {
+  font-weight: 600;
+  color: var(--color-accent-deep);
+  font-size: 1rem;
+}
+
+.list-row__org {
+  color: var(--color-text-muted);
+  font-size: 0.9rem;
+}
+
+.list-row__date {
+  font-size: 0.85rem;
+  color: var(--color-text-muted);
+  font-weight: 500;
+  white-space: nowrap;
+}
+
+/* ---------- Footer ---------- */
+.site-footer {
+  border-top: 1px solid var(--color-border);
+  padding: 32px 0;
+}
+
+.footer__inner {
+  text-align: center;
+  color: var(--color-text-muted);
+  font-size: 0.9rem;
+}
+
+/* ---------- Responsive ---------- */
+/* Not enough room left of the tins: put the teapot on its own row below them */
+@media (max-width: 1319px) {
+  .hero__grid { flex-wrap: wrap; }
+
+  .hero__teapot {
+    --teapot-width: 180px;
+    position: static;
+    order: 3;
+    width: 100%;
+  }
+}
+
+@media (max-width: 800px) {
+  .project-grid {
+    grid-template-columns: 1fr;
+  }
+}
+
+@media (max-width: 900px) {
+  .hero__grid {
+    flex-direction: column;
+  }
+
+  .hero__main { order: 1; }
+  .hero__nav { order: 2; }
+
+  .hero__nav {
+    --tin-width: 96px;
+    flex-direction: row;
+    flex-wrap: wrap;
+    align-items: flex-end;
+    gap: 20px;
+  }
+}
+
+@media (max-width: 640px) {
+  .hero { padding: 64px 24px 72px; }
+
+  .section { padding: 64px 0; }
+
+  .timeline { padding-left: 24px; }
+  .timeline__dot { left: -31px; }
+}
+
+  </style>
+</head>
+<body>
+
+  <main id="top">
+
+    <!-- Hero -->
+    <section class="hero container" id="hero">
+      <div class="hero__grid">
+        <div class="hero__main">
+          <div class="hero__text">
+            <p class="eyebrow">[ Hello, I'm ]</p>
+            <h1 class="hero__name">Brandon Quach</h1>
+            <p class="hero__intro">
+              I am a senior at Yale studying Molecular Biophysics & Biochemistry with a minor in Data Science. My academic work focuses on using machine 
+              learning methods to design novel enhancers for cell-type-specific experiments in mosquito brains. I am most interested in grounding computational 
+              methods in in vivo experiments, drawing on concepts like "lab in the loop" and papers such as DeepLIFT.
+              <br>
+              <br>
+              Outside of the lab, I think a lot about how to brew the perfect cup of tea. In science education, I re-founded The Green Cafe to teach biology at 
+              the Marsh Botanical Garden, serve as a Senior Staff Writer for the Yale Scientific Magazine, and co-direct the Science and Civics Fellowship with 
+              CU Society.
+              
+              <br>
+              <br>
+              Currently drinking: 白毫银针 - Silver Needle White Tea
+            </p>
+          </div>
+
+          <div class="hero__photo-wrap">
+            <div class="hero__photo">
+              <img src="assets/photo.jpg" alt="Brandon Quach reaching up to a plant in a greenhouse" />
+            </div>
+          </div>
+        </div>
+
+        <nav class="hero__nav" id="navLinks" aria-label="Section navigation">
+          <a href="#experience" class="nav__link" aria-label="Experience">
+            <img src="assets/research.png" alt="Experience" class="nav__badge" style="--visible: 0.875" />
+          </a>
+          <a href="#science-communication" class="nav__link" aria-label="Science Communication">
+            <img src="assets/sci_comm.png" alt="Science Communication" class="nav__badge" style="--visible: 1" />
+          </a>
+          <a href="#projects" class="nav__link" aria-label="Projects">
+            <img src="assets/projects.png" alt="Projects" class="nav__badge" style="--visible: 0.894" />
+          </a>
+        </nav>
+
+        <div class="hero__teapot">
+          <img src="assets/teapot.png" alt="Teapot with an arrow pointing to the tea tins" />
+          <p class="hero__teapot-text">Have a cup with me!</p>
+        </div>
+      </div>
+    </section>
+
+    <!-- Research -->
+    <section class="section section--alt" id="experience">
+      <div class="container">
+        <p class="section__eyebrow">[ 01 ]</p>
+        <h2 class="section__title">Research</h2>
+
+        <div class="timeline">
+
+          <div class="timeline__item">
+            <div class="timeline__dot" aria-hidden="true"></div>
+            <div class="timeline__content">
+              <div class="timeline__head">
+                <h3>Undergraduate Researcher</h3>
+                <span class="timeline__date">March 2024 — Present</span>
+              </div>
+              <p class="timeline__org">Sorrells Lab, Yale School of Medicine - Department of Genetics</p>
+              <ul class="timeline__bullets">
+                <li>Project: Designing Synthetic Enhancers for Neuronal Cell-Type Specific Experimentation</li>
+              </ul>
+            </div>
+          </div>
+
+          <div class="timeline__item">
+            <div class="timeline__dot" aria-hidden="true"></div>
+            <div class="timeline__content">
+              <div class="timeline__head">
+                <h3>Howard Hughes Medical Institute Cech Fellow</h3>
+                <span class="timeline__date">May 2026 - July 2026</span>
+              </div>
+              <p class="timeline__org">Shendure Lab, University of Washington, Department of Genome Sciences</p>
+              <ul class="timeline__bullets">
+                <li>Project: Genomic Origin as a Determinant of Transgene Silencing in Mouse Embryonic Stem Cells</li>
+              </ul>
+            </div>
+          </div>
+
+          <div class="timeline__item">
+            <div class="timeline__dot" aria-hidden="true"></div>
+            <div class="timeline__content">
+              <div class="timeline__head">
+                <h3>Wu Tsai Undergraduate Fellow</h3>
+                <span class="timeline__date">May 2025 - July 2025</span>
+              </div>
+              <p class="timeline__org">Sorrells Lab, Yale School of Medicine - Department of Genetics</p>
+              <ul class="timeline__bullets">
+              </ul>
+            </div>
+
+          </div>
+          <div class="timeline__item">
+            <div class="timeline__dot" aria-hidden="true"></div>
+            <div class="timeline__content">
+              <div class="timeline__head">
+                <h3>First-Year Summer Research Fellowship in Sciences and Engineering</h3>
+                <span class="timeline__date">May 2024 - July 2024</span>
+              </div>
+              <p class="timeline__org">Sorrells Lab, Yale School of Medicine - Department of Genetics</p>
+              <ul class="timeline__bullets">
+              </ul>
+            </div>
+          </div>
+
+        </div>
+      </div>
+    </section>
+
+    <!-- Science Communication -->
+    <section class="section" id="science-communication">
+      <div class="container">
+        <p class="section__eyebrow">[ 02 ]</p>
+        <h2 class="section__title">Science Communication</h2>
+        <p class="section__subtitle">Projects as of late.</p>
+
+        <div class="project-grid">
+
+          <a class="card" href="https://marshbotanicalgarden.yale.edu/explore/public-programs" target="_blank" rel="noopener noreferrer">
+            <div class="card__top">
+              <h3 class="card__title">The Green Cafe</h3>
+            </div>
+            <p class="card__role">Founder and President</p>
+            <p class="card__desc">My club that brings ecology research to New Haven general public and Yale community, emphasizing non-traditional pedagogical methods.</p>
+          </a>
+
+          <a class="card" href="https://www.yalescientific.org/" target="_blank" rel="noopener noreferrer">
+            <div class="card__top">
+              <h3 class="card__title">Yale Scientific Magazine</h3>
+            </div>
+            <p class="card__role">Senior Staff Writer & Former Scope Editor</p>
+            <p class="card__desc">Breaking down scientific writing for a broad audience with over 2000+ subscribers around the world. Particularly focusing
+              on research from the Global South or impacting the climate.
+            </p>
+          </a>
+
+          <article class="card">
+            <div class="card__top">
+              <h3 class="card__title">Biochemistry of Tea</h3>
+            </div>
+            <p class="card__role">Lecturer</p>
+            <p class="card__desc">Talk about the unappreciated biochemical processes that turn the Camelia sinensis plant into the six types of tea we drink. Intro photo
+              is me next to the tea plant! 
+            </p>
+          </article>
+
+          <a class="card" href="https://www.cusociety.com/" target="_blank" rel="noopener noreferrer">
+            <div class="card__top">
+              <h3 class="card__title">CU Society x Biochemistry & Our Changing Climate</h3>
+            </div>
+            <p class="card__role">Co-Director and Teacher</p>
+            <p class="card__desc">The 'Science and Civics Fellowship' with CU Society giving highschool students the biochemical tools to think about the changing climate. 
+            </p>
+          </a>
+
+        </div>
+      </div>
+    </section>
+
+    <!-- Projects -->
+    <section class="section section--alt" id="projects">
+      <div class="container">
+        <p class="section__eyebrow">[ 03 ]</p>
+        <h2 class="section__title">Projects</h2>
+        <p class="section__subtitle">An assortment of random side projects.</p>
+
+        <div class="project-grid">
+
+          <a class="card" href="https://github.com/brandonquachbq/tea-catalog" target="_blank" rel="noopener noreferrer">
+            <div class="card__top">
+              <h3 class="card__title">Tea Catalog</h3>
+            </div>
+            <p class="card__desc">For the perfect cup of tea.</p>
+          </a>
+
+          <a class="card" href="https://github.com/brandonquachbq/daltonize" target="_blank" rel="noopener noreferrer">
+            <div class="card__top">
+              <h3 class="card__title">Daltonize</h3>
+            </div>
+            <p class="card__desc">For colorblind scientist.</p>
+          </a>
+
+          <a class="card" href="https://github.com/brandonquachbq/retirement-calculator" target="_blank" rel="noopener noreferrer">
+            <div class="card__top">
+              <h3 class="card__title">Retirement Calculator</h3>
+            </div>
+            <p class="card__desc">For greater financial literacy about retirement.</p>
+          </a>
+          
+
+        </div>
+      </div>
+    </section>
+
+  </main>
+
+  <footer class="site-footer">
+    <div class="container footer__inner">
+      <p>&copy; <span id="year"></span> Brandon Quach. Brewed with care.</p>
+    </div>
+  </footer>
+
+  <script>
+// Footer year
+document.getElementById("year").textContent = new Date().getFullYear();
+
+// Type out "Have a cup with me!" under the teapot
+const teapotText = document.querySelector(".hero__teapot-text");
+const reduceMotion = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+
+if (teapotText && !reduceMotion) {
+  const message = teapotText.textContent.trim();
+  let i = 0;
+  teapotText.textContent = "";
+  teapotText.classList.add("is-typing");
+
+  const typeNext = () => {
+    teapotText.textContent = message.slice(0, ++i);
+    if (i < message.length) {
+      setTimeout(typeNext, 90);
+    } else {
+      setTimeout(() => teapotText.classList.remove("is-typing"), 1500);
+    }
+  };
+
+  setTimeout(typeNext, 600);
+}
+
+// Scale the tea tins uniformly so their stacked height matches the text + photo column
+const heroMain = document.querySelector(".hero__main");
+const heroNav = document.querySelector(".hero__nav");
+const badges = heroNav ? [...heroNav.querySelectorAll(".nav__badge")] : [];
+
+const heroGrid = document.querySelector(".hero__grid");
+
+const sizeBadges = () => {
+  if (window.innerWidth <= 900) {
+    ["--tin-width", "--badge-width", "--first-tin-height"].forEach((v) => heroGrid.style.removeProperty(v));
+    return;
+  }
+  const ratio = (img) => (img.naturalWidth ? img.naturalHeight / img.naturalWidth : 0);
+  const visible = (img) => parseFloat(getComputedStyle(img).getPropertyValue("--visible")) || 1;
+  // Each tin's image is (tinWidth / visible) wide, so its height is tinWidth * ratio / visible
+  const heightPerTinWidth = badges.reduce((sum, img) => sum + ratio(img) / visible(img), 0);
+  if (!heightPerTinWidth) return;
+  const gap = parseFloat(getComputedStyle(heroNav).rowGap) || 0;
+  const available = heroMain.offsetHeight - gap * (badges.length - 1);
+  const tinWidth = available / heightPerTinWidth;
+  const imageWidth = (img) => tinWidth / visible(img);
+  heroGrid.style.setProperty("--tin-width", `${tinWidth}px`);
+  // The teapot is positioned from the tin column, which is as wide as its widest image
+  heroGrid.style.setProperty("--badge-width", `${Math.max(...badges.map(imageWidth))}px`);
+  heroGrid.style.setProperty("--first-tin-height", `${imageWidth(badges[0]) * ratio(badges[0])}px`);
+};
+
+if (heroMain && heroNav && badges.length) {
+  const loaded = (img) =>
+    img.complete
+      ? Promise.resolve()
+      : new Promise((resolve) => {
+          img.addEventListener("load", resolve, { once: true });
+          img.addEventListener("error", resolve, { once: true });
+        });
+
+  Promise.all(badges.map(loaded)).then(() => {
+    sizeBadges();
+    new ResizeObserver(sizeBadges).observe(heroMain);
+  });
+}
+
+// Active nav link highlighting on scroll
+const sections = document.querySelectorAll("main section[id]");
+const navAnchors = document.querySelectorAll(".nav__link");
+
+const highlightNav = () => {
+  let currentId = "";
+  const scrollPos = window.scrollY + 120;
+
+  sections.forEach((section) => {
+    if (scrollPos >= section.offsetTop) {
+      currentId = section.id;
+    }
+  });
+
+  navAnchors.forEach((anchor) => {
+    anchor.classList.toggle("is-active", anchor.getAttribute("href") === `#${currentId}`);
+  });
+};
+
+window.addEventListener("scroll", highlightNav);
+highlightNav();
+
+// Scroll-reveal animation
+const revealTargets = document.querySelectorAll(".card, .timeline__item, .list-row");
+revealTargets.forEach((el) => el.classList.add("reveal"));
+
+const observer = new IntersectionObserver(
+  (entries) => {
+    entries.forEach((entry) => {
+      if (entry.isIntersecting) {
+        entry.target.classList.add("is-visible");
+        observer.unobserve(entry.target);
+      }
+    });
+  },
+  { threshold: 0.15 }
+);
+
+revealTargets.forEach((el) => observer.observe(el));
+  </script>
+</body>
+</html>
